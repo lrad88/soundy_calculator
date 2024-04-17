@@ -30,6 +30,8 @@ class SpeedOfSound(QWidget):
         self.setWindowTitle("Sound Calculations Tool")
         grid = QGridLayout()
 
+        tool_label = QLabel("Speed of a sound:")
+
         distance_label = QLabel("Distance:")
         self.distance_line_edit = QLineEdit()
 
@@ -47,14 +49,18 @@ class SpeedOfSound(QWidget):
 
         self.output_label = QLabel("")
 
-        grid.addWidget(distance_label, 0, 0)
-        grid.addWidget(self.distance_line_edit, 0, 1)
-        grid.addWidget(combo, 0, 2)
-        grid.addWidget(temp_label, 1, 0)
-        grid.addWidget(self.temp_line_edit, 1, 1)
-        grid.addWidget(combo2, 1, 2)
-        grid.addWidget(calculate_button, 2, 1)
-        grid.addWidget(self.output_label, 3, 0, 1, 2)
+        tool_label2 = QLabel("Reverb calculator:")
+
+        grid.addWidget(tool_label, 0, 0)
+        grid.addWidget(distance_label, 1, 0)
+        grid.addWidget(self.distance_line_edit, 1, 1)
+        grid.addWidget(combo, 1, 2)
+        grid.addWidget(temp_label, 2, 0)
+        grid.addWidget(self.temp_line_edit, 2, 1)
+        grid.addWidget(combo2, 2, 2)
+        grid.addWidget(calculate_button, 3, 1)
+        grid.addWidget(self.output_label, 4, 0, 1, 2)
+        grid.addWidget(tool_label2, 5, 0)
 
         self.setLayout(grid)
 
