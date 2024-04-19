@@ -22,6 +22,8 @@ import sys
 app = QApplication(sys.argv)
 combo = QComboBox()
 combo2 = QComboBox()
+combo3 = QComboBox()
+combo4 = QComboBox()
 
 
 class SpeedOfSound(QWidget):
@@ -49,7 +51,31 @@ class SpeedOfSound(QWidget):
 
         self.output_label = QLabel("")
 
+# reverb calculator
         tool_label2 = QLabel("Reverb calculator:")
+        bpm_label = QLabel("BPM:")
+        self.BPM_line_edit = QLineEdit()
+        Pre_delay_label = QLabel("Pre-delay duration:")
+        combo3.addItems(
+            ["0 ms", "0.1 ms", "1 ms", "10 ms", "30 ms", "1/512 note triplet",
+             "1/512 note", "1/512 note dotted", "1/256 note triplet", "1/256 note",
+             "1/256 note dotted", "1/128 note triplet", "1/128 note", "1/128 note dotted",
+             "1/64 note triplet", "1/64 note", "1/64 note dotted", "1/32 note triplet",
+             "1/32 note", "1/32 note dotted"])
+        pre_delay_decay_label = QLabel("Pre-delay + Decay duration:")
+        combo4.addItems(
+            ["1/32 note", "1/32 note dotted", "1/16 note triplet", "1/16 note",
+             "1/16 note dotted", "1/8 note triplet", "1/8 note", "1/8 note dotted",
+             "1/4 note triplet", "1/4 note", "1/4 note dotted", "1/2 note triplet",
+             "1/2 note", "1/2 note dotted", "1 note triplet", "1 note", "1 note dotted",
+             "2 notes triplet", "2 notes", "2 notes dotted", "4 notes triplet", "4 notes",
+             "4 notes dotted", "8 notes triplet", "8 notes", "8 notes dotted"])
+
+        calculate_button2 = QPushButton("Calculate")
+        calculate_button2.clicked.connect(self.calculate_sos)
+
+        self.output_label2 = QLabel("")
+
 
         grid.addWidget(tool_label, 0, 0)
         grid.addWidget(distance_label, 1, 0)
@@ -60,7 +86,19 @@ class SpeedOfSound(QWidget):
         grid.addWidget(combo2, 2, 2)
         grid.addWidget(calculate_button, 3, 1)
         grid.addWidget(self.output_label, 4, 0, 1, 2)
+
+# reverb calculator
+
         grid.addWidget(tool_label2, 5, 0)
+        grid.addWidget(bpm_label, 6, 0)
+        grid.addWidget(self.BPM_line_edit, 6, 1)
+        grid.addWidget(Pre_delay_label, 7, 0)
+        grid.addWidget(combo3, 7, 1)
+        grid.addWidget(pre_delay_decay_label, 8, 0)
+        grid.addWidget(combo4, 8, 1)
+        grid.addWidget(calculate_button2, 9, 1)
+        grid.addWidget(self.output_label2, 10, 0, 1, 2)
+
 
         self.setLayout(grid)
 
@@ -82,6 +120,7 @@ class SpeedOfSound(QWidget):
                 f"Sound will reach point in: {round(combo_choice, 3)} seconds")
         else:
             self.output_label.setText("Invalid unit of temperature selected.")
+
 
 
 SOS = SpeedOfSound()
