@@ -6,4 +6,4 @@ current tools available:
 - Reverb and delay calculator
 - Upcoming : Signal Generator
 - Upcoming : White, pink, Brown noise generator
-- Frequency sweep
+- Upcoming : Frequency sweep
