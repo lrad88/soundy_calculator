@@ -24,6 +24,8 @@ combo = QComboBox()
 combo2 = QComboBox()
 combo3 = QComboBox()
 combo4 = QComboBox()
+combo5 = QComboBox()
+combo6 = QComboBox()
 
 
 class SpeedOfSound(QWidget):
@@ -51,31 +53,27 @@ class SpeedOfSound(QWidget):
 
         self.output_label = QLabel("")
 
-# reverb calculator
+        # reverb calculator
         tool_label2 = QLabel("Reverb calculator:")
         bpm_label = QLabel("BPM:")
         self.BPM_line_edit = QLineEdit()
-        Pre_delay_label = QLabel("Pre-delay duration:")
-        combo3.addItems(
-            ["0 ms", "0.1 ms", "1 ms", "10 ms", "30 ms", "1/512 note triplet",
-             "1/512 note", "1/512 note dotted", "1/256 note triplet", "1/256 note",
-             "1/256 note dotted", "1/128 note triplet", "1/128 note", "1/128 note dotted",
-             "1/64 note triplet", "1/64 note", "1/64 note dotted", "1/32 note triplet",
-             "1/32 note", "1/32 note dotted"])
+        pre_delay_label = QLabel("Pre-delay duration:")
+        combo3.addItems(["0 ms", "0.1 ms", "1 ms", "10 ms", "30 ms",
+                        "1/512 note", "1/256 note", "1/128 note",
+                         "1/64 note", "1/32 note"])
+
+        combo5.addItems(["---", "dotted", "triplet"])
+
         pre_delay_decay_label = QLabel("Pre-delay + Decay duration:")
-        combo4.addItems(
-            ["1/32 note", "1/32 note dotted", "1/16 note triplet", "1/16 note",
-             "1/16 note dotted", "1/8 note triplet", "1/8 note", "1/8 note dotted",
-             "1/4 note triplet", "1/4 note", "1/4 note dotted", "1/2 note triplet",
-             "1/2 note", "1/2 note dotted", "1 note triplet", "1 note", "1 note dotted",
-             "2 notes triplet", "2 notes", "2 notes dotted", "4 notes triplet", "4 notes",
-             "4 notes dotted", "8 notes triplet", "8 notes", "8 notes dotted"])
+        combo4.addItems(["1/32 note","1/16 note","1/8 note","1/4 note",
+             "1/2 note", "1 note", "2 notes", "4 notes","8 notes"])
+
+        combo6.addItems(["---", "dotted", "triplet"])
 
         calculate_button2 = QPushButton("Calculate")
-        calculate_button2.clicked.connect(self.calculate_sos)
+        calculate_button2.clicked.connect(self.calculate_reverb)
 
         self.output_label2 = QLabel("")
-
 
         grid.addWidget(tool_label, 0, 0)
         grid.addWidget(distance_label, 1, 0)
@@ -87,18 +85,19 @@ class SpeedOfSound(QWidget):
         grid.addWidget(calculate_button, 3, 1)
         grid.addWidget(self.output_label, 4, 0, 1, 2)
 
-# reverb calculator
+        # reverb calculator
 
         grid.addWidget(tool_label2, 5, 0)
         grid.addWidget(bpm_label, 6, 0)
         grid.addWidget(self.BPM_line_edit, 6, 1)
-        grid.addWidget(Pre_delay_label, 7, 0)
+        grid.addWidget(pre_delay_label, 7, 0)
         grid.addWidget(combo3, 7, 1)
+        grid.addWidget(combo5, 7, 2)
         grid.addWidget(pre_delay_decay_label, 8, 0)
         grid.addWidget(combo4, 8, 1)
+        grid.addWidget(combo6, 8, 2)
         grid.addWidget(calculate_button2, 9, 1)
         grid.addWidget(self.output_label2, 10, 0, 1, 2)
-
 
         self.setLayout(grid)
 
@@ -121,6 +120,90 @@ class SpeedOfSound(QWidget):
         else:
             self.output_label.setText("Invalid unit of temperature selected.")
 
+    def calculate_reverb(self):
+        BPM = float(self.BPM_line_edit.text())
+
+        pre_delay = {
+            "0 ms": 0,
+            "0.1 ms": 0.1,
+            "1 ms": 1,
+            "10 ms": 10,
+            "30 ms": 30,
+            "1/512 note": 128,
+            "1/256 note": 64,
+            "1/128 note": 32,
+            "1/64 note": 16,
+            "1/32 note": 8,
+        }
+
+        pre_delay_decay = {
+            "1/32 note": 8,
+            "1/16 note": 4,
+            "1/8 note": 2,
+            "1/4 note": 1,
+            "1/2 note": 0.5,
+            "1 note": 0.250,
+            "2 notes": 0.125,
+            "4 notes": 0.0625,
+            "8 notes": 0.03125
+        }
+
+        extra = {
+            "dotted": 1.5,
+            "triplet": 2
+        }
+
+        if combo3.currentText() in pre_delay:
+            formula2 = pre_delay[combo3.currentText()]
+
+            if combo4.currentText() in pre_delay_decay:
+                formula21 = pre_delay_decay[combo4.currentText()]
+
+                #formula2111 = (((60000 / BPM) - formula2) / formula21)
+
+                #self.output_label2.setText(f"{round(formula2111, 3)}")
+
+                if combo5.currentText() == "dotted":
+                    extra1 = extra[combo5.currentText()]
+
+                    formula2111 = (((60000 / BPM) - formula2) / formula21) * extra1
+
+                    self.output_label2.setText(f"{round(formula2111, 3)}")
+
+                elif combo5.currentText() == "triplet":
+                    extra1 = extra[combo5.currentText()]
+
+                    formula2111 = ((((60000 / BPM) - formula2) / formula21) / 3) * extra1
+
+                    self.output_label2.setText(f"{round(formula2111, 3)}")
+
+                elif combo5.currentText() == "---":
+
+                    formula2111 = (((60000 / BPM) - formula2) / formula21)
+
+                    self.output_label2.setText(f"{round(formula2111, 3)}")
+
+
+
+                if combo6.currentText() == "dotted":
+                    extra2 = extra[combo6.currentText()]
+
+                    formula2111 = (((60000 / BPM) - formula2) / formula21) * extra2
+
+                    self.output_label2.setText(f"{round(formula2111, 3)}")
+
+                elif combo6.currentText() == "triplet":
+                    extra2 = extra[combo6.currentText()]
+
+                    formula2111 = ((((60000 / BPM) - formula2) / formula21) / 3) * extra2
+
+                    self.output_label2.setText(f"{round(formula2111, 3)}")
+
+                elif combo6.currentText() == "---":
+
+                    formula2111 = ((((60000 / BPM) - formula2) / formula21))
+
+                    self.output_label2.setText(f"{round(formula2111, 3)}")
 
 
 SOS = SpeedOfSound()
