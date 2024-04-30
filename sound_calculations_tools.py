@@ -59,14 +59,15 @@ class SpeedOfSound(QWidget):
         self.BPM_line_edit = QLineEdit()
         pre_delay_label = QLabel("Pre-delay duration:")
         combo3.addItems(["0 ms", "0.1 ms", "1 ms", "10 ms", "30 ms",
-                        "1/512 note", "1/256 note", "1/128 note",
+                         "1/512 note", "1/256 note", "1/128 note",
                          "1/64 note", "1/32 note"])
 
         combo5.addItems(["---", "dotted", "triplet"])
 
         pre_delay_decay_label = QLabel("Pre-delay + Decay duration:")
-        combo4.addItems(["1/32 note","1/16 note","1/8 note","1/4 note",
-             "1/2 note", "1 note", "2 notes", "4 notes","8 notes"])
+        combo4.addItems(["1/32 note", "1/16 note", "1/8 note", "1/4 note",
+                         "1/2 note", "1 note", "2 notes", "4 notes",
+                         "8 notes"])
 
         combo6.addItems(["---", "dotted", "triplet"])
 
@@ -123,17 +124,21 @@ class SpeedOfSound(QWidget):
     def calculate_reverb(self):
         BPM = float(self.BPM_line_edit.text())
 
-        pre_delay = {
+        pre_delay1 = {
             "0 ms": 0,
-            "0.1 ms": 0.1,
+            "0.1 ms": 0.100,
             "1 ms": 1,
             "10 ms": 10,
             "30 ms": 30,
+        }
+
+        pre_delay2 = {
+
             "1/512 note": 128,
             "1/256 note": 64,
             "1/128 note": 32,
             "1/64 note": 16,
-            "1/32 note": 8,
+            "1/32 note": 8
         }
 
         pre_delay_decay = {
@@ -153,59 +158,40 @@ class SpeedOfSound(QWidget):
             "triplet": 2
         }
 
-        if combo3.currentText() in pre_delay:
-            formula2 = pre_delay[combo3.currentText()]
+        pre_delayo = 60000 / BPM
+        decay_amt = pre_delay_decay[combo4.currentText()]
+        delay_decay = ((60000 / BPM) / decay_amt)
 
-            if combo4.currentText() in pre_delay_decay:
-                formula21 = pre_delay_decay[combo4.currentText()]
+        if combo3.currentText() in pre_delay1:
+            pre_delay_amt1 = pre_delay1[combo3.currentText()]
 
-                #formula2111 = (((60000 / BPM) - formula2) / formula21)
-
-                #self.output_label2.setText(f"{round(formula2111, 3)}")
-
-                if combo5.currentText() == "dotted":
-                    extra1 = extra[combo5.currentText()]
-
-                    formula2111 = (((60000 / BPM) - formula2) / formula21) * extra1
-
-                    self.output_label2.setText(f"{round(formula2111, 3)}")
-
-                elif combo5.currentText() == "triplet":
-                    extra1 = extra[combo5.currentText()]
-
-                    formula2111 = ((((60000 / BPM) - formula2) / formula21) / 3) * extra1
-
-                    self.output_label2.setText(f"{round(formula2111, 3)}")
-
-                elif combo5.currentText() == "---":
-
-                    formula2111 = (((60000 / BPM) - formula2) / formula21)
-
-                    self.output_label2.setText(f"{round(formula2111, 3)}")
+            delay_decay = ((60000 / BPM) / decay_amt)
+            self.output_label2.setText(
+                f"{round(delay_decay - pre_delay_amt1, 3)}")
 
 
+        elif combo3.currentText() in pre_delay2:
+            pre_delay_amt2 = pre_delay2[combo3.currentText()]
 
-                if combo6.currentText() == "dotted":
-                    extra2 = extra[combo6.currentText()]
+            self.output_label2.setText(
+                f"{round(delay_decay-(pre_delayo / pre_delay_amt2), 3)}")
 
-                    formula2111 = (((60000 / BPM) - formula2) / formula21) * extra2
+        elif combo3.currentText() in pre_delay1 and combo4.currentText() == "triplet":
+            pre_delay_amt1 = pre_delay1[combo3.currentText()]
 
-                    self.output_label2.setText(f"{round(formula2111, 3)}")
+            delay_decay = ((60000 / BPM) / decay_amt)
+            self.output_label2.setText(
+                f"{round(delay_decay - pre_delay_amt1, 3)}")
 
-                elif combo6.currentText() == "triplet":
-                    extra2 = extra[combo6.currentText()]
-
-                    formula2111 = ((((60000 / BPM) - formula2) / formula21) / 3) * extra2
-
-                    self.output_label2.setText(f"{round(formula2111, 3)}")
-
-                elif combo6.currentText() == "---":
-
-                    formula2111 = ((((60000 / BPM) - formula2) / formula21))
-
-                    self.output_label2.setText(f"{round(formula2111, 3)}")
+        extra1 = extra[combo5.currentText()]
+        extra2 = extra[combo6.currentText()]
 
 
 SOS = SpeedOfSound()
 SOS.show()
 sys.exit(app.exec())
+
+#600 128 100 8 = 70.31 or 4.69
+# 1/512 1/32
+# formula = (((60000 / BPM / formula2))) = 4.69
+# formula (((60000 / BPM / formula21))) = 75
