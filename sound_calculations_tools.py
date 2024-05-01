@@ -153,38 +153,36 @@ class SpeedOfSound(QWidget):
             "8 notes": 0.03125
         }
 
-        extra = {
-            "dotted": 1.5,
-            "triplet": 2
-        }
-
         pre_delayo = 60000 / BPM
         decay_amt = pre_delay_decay[combo4.currentText()]
         delay_decay = ((60000 / BPM) / decay_amt)
 
-        if combo3.currentText() in pre_delay1:
+        if combo3.currentText() in pre_delay1:  # params between 0 and 30 ms
             pre_delay_amt1 = pre_delay1[combo3.currentText()]
 
-            delay_decay = ((60000 / BPM) / decay_amt)
             self.output_label2.setText(
                 f"{round(delay_decay - pre_delay_amt1, 3)}")
 
+        elif combo3.currentText() in pre_delay2 and combo5.currentText() == "triplet":  # params between 1/512 and 1/32 note
+            pre_delay_amt2 = pre_delay2[combo3.currentText()]
 
-        elif combo3.currentText() in pre_delay2:
+            self.output_label2.setText(
+                f"{round(delay_decay-(((pre_delayo / pre_delay_amt2)/3)*2), 3)}")
+
+        elif combo3.currentText() in pre_delay2 and combo5.currentText() == "dotted": # params between 1/512 and 1/32 note
+            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+            sumbo = (pre_delayo / pre_delay_amt2) / 2
+            self.output_label2.setText(
+                f"{round(delay_decay - ((pre_delayo / pre_delay_amt2) + sumbo), 3)}")
+
+        elif combo3.currentText() in pre_delay2: # params between 1/512 and 1/32 note
             pre_delay_amt2 = pre_delay2[combo3.currentText()]
 
             self.output_label2.setText(
                 f"{round(delay_decay-(pre_delayo / pre_delay_amt2), 3)}")
 
-        elif combo3.currentText() in pre_delay1 and combo4.currentText() == "triplet":
-            pre_delay_amt1 = pre_delay1[combo3.currentText()]
 
-            delay_decay = ((60000 / BPM) / decay_amt)
-            self.output_label2.setText(
-                f"{round(delay_decay - pre_delay_amt1, 3)}")
 
-        extra1 = extra[combo5.currentText()]
-        extra2 = extra[combo6.currentText()]
 
 
 SOS = SpeedOfSound()
