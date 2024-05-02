@@ -157,11 +157,26 @@ class SpeedOfSound(QWidget):
         decay_amt = pre_delay_decay[combo4.currentText()]
         delay_decay = ((60000 / BPM) / decay_amt)
 
-        if combo3.currentText() in pre_delay1:  # params between 0 and 30 ms
+        if combo3.currentText() in pre_delay1 and combo6.currentText() == "triplet":
+            pre_delay_amt1 = pre_delay1[combo3.currentText()]
+
+            self.output_label2.setText(
+                f"{round((((delay_decay / 3) * 2) - pre_delay_amt1), 3)}")
+
+        elif combo3.currentText() in pre_delay1 and combo6.currentText() == "dotted":  # params between 1/512 and 1/32 note
+            pre_delay_amt1 = pre_delay1[combo3.currentText()]
+            zang = delay_decay / 2 # 150 / 2 = 75
+
+            self.output_label2.setText(
+                f"{round(delay_decay + zang - (pre_delay_amt1), 3)}")
+
+
+        elif combo3.currentText() in pre_delay1:  # params between 0 and 30 ms
             pre_delay_amt1 = pre_delay1[combo3.currentText()]
 
             self.output_label2.setText(
                 f"{round(delay_decay - pre_delay_amt1, 3)}")
+
 
         elif combo3.currentText() in pre_delay2 and combo5.currentText() == "triplet" and combo6.currentText() == "triplet":  # params between 1/512 and 1/32 note
             pre_delay_amt2 = pre_delay2[combo3.currentText()]
@@ -192,8 +207,6 @@ class SpeedOfSound(QWidget):
                 f"{round((((delay_decay / 3) * 2) - (pre_delayo / pre_delay_amt2)), 3)}") # ((300 / 3) * 2) - (600 / 128)
 
 
-
-
         elif combo3.currentText() in pre_delay2 and combo5.currentText() == "dotted" and combo6.currentText() == "triplet":  # params between 1/512 and 1/32 note
             pre_delay_amt2 = pre_delay2[combo3.currentText()]
             sumbo = (pre_delayo / pre_delay_amt2) / 2
@@ -219,10 +232,10 @@ class SpeedOfSound(QWidget):
 
         elif combo3.currentText() in pre_delay2 and combo5.currentText() == "---" and combo6.currentText() == "dotted":  # params between 1/512 and 1/32 note
             pre_delay_amt2 = pre_delay2[combo3.currentText()]
-            sumbo = (pre_delayo / pre_delay_amt2) / 2
+            zang = delay_decay / 2 # 150 / 2 = 75
 
             self.output_label2.setText(
-                f"{round(delay_decay - ((pre_delayo / pre_delay_amt2) + sumbo), 3)}") # 75 - (600/128)=4.69 +2.35 = 7.04
+                f"{round(delay_decay + zang - (pre_delayo / pre_delay_amt2), 3)}") # 150 + 75 - 600 / 128 = 4.69 + 2.35
 
         elif combo3.currentText() in pre_delay2:  # params between 1/512 and 1/32 note
             pre_delay_amt2 = pre_delay2[combo3.currentText()]
@@ -234,8 +247,3 @@ class SpeedOfSound(QWidget):
 SOS = SpeedOfSound()
 SOS.show()
 sys.exit(app.exec())
-
-#600 128 100 8 = 70.31 or 4.69
-# 1/512 1/32
-# formula = (((60000 / BPM / formula2))) = 4.69
-# formula (((60000 / BPM / formula21))) = 75
