@@ -64,12 +64,16 @@ class SpeedOfSound(QWidget):
 
         combo5.addItems(["---", "dotted", "triplet"])
 
+        self.output_label3 = QLabel("")
+
         pre_delay_decay_label = QLabel("Pre-delay + Decay duration:")
         combo4.addItems(["1/32 note", "1/16 note", "1/8 note", "1/4 note",
                          "1/2 note", "1 note", "2 notes", "4 notes",
                          "8 notes"])
 
         combo6.addItems(["---", "dotted", "triplet"])
+
+        self.output_label4 = QLabel("")
 
         calculate_button2 = QPushButton("Calculate")
         calculate_button2.clicked.connect(self.calculate_reverb)
@@ -94,11 +98,13 @@ class SpeedOfSound(QWidget):
         grid.addWidget(pre_delay_label, 7, 0)
         grid.addWidget(combo3, 7, 1)
         grid.addWidget(combo5, 7, 2)
-        grid.addWidget(pre_delay_decay_label, 8, 0)
-        grid.addWidget(combo4, 8, 1)
-        grid.addWidget(combo6, 8, 2)
-        grid.addWidget(calculate_button2, 9, 1)
-        grid.addWidget(self.output_label2, 10, 0, 1, 2)
+        grid.addWidget(self.output_label3, 8, 0, 1, 2)
+        grid.addWidget(pre_delay_decay_label, 9, 0)
+        grid.addWidget(combo4, 9, 1)
+        grid.addWidget(combo6, 9, 2)
+        grid.addWidget(self.output_label4, 11, 0, 1, 2)
+        grid.addWidget(calculate_button2, 12, 1)
+        grid.addWidget(self.output_label2, 13, 0, 1, 2)
 
         self.setLayout(grid)
 
