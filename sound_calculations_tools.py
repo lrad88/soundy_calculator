@@ -62,7 +62,11 @@ class SpeedOfSound(QWidget):
                          "1/512 note", "1/256 note", "1/128 note",
                          "1/64 note", "1/32 note"])
 
+        combo3.currentIndexChanged.connect(self.calculate_reverb)
+
         combo5.addItems(["---", "dotted", "triplet"])
+
+        combo5.currentIndexChanged.connect(self.calculate_reverb)
 
         self.output_label3 = QLabel("")
 
@@ -71,7 +75,11 @@ class SpeedOfSound(QWidget):
                          "1/2 note", "1 note", "2 notes", "4 notes",
                          "8 notes"])
 
+        combo4.currentIndexChanged.connect(self.calculate_reverb)
+
         combo6.addItems(["---", "dotted", "triplet"])
+
+        combo6.currentIndexChanged.connect(self.calculate_reverb)
 
         self.output_label4 = QLabel("")
 
@@ -127,10 +135,11 @@ class SpeedOfSound(QWidget):
         else:
             self.output_label.setText("Invalid unit of temperature selected.")
 
-    def calculate_reverb(self):
-        BPM = float(self.BPM_line_edit.text())
 
-        pre_delay1 = {
+    def numbers(self):
+        self.BPM = float(self.BPM_line_edit.text())
+
+        self.pre_delay1 = {
             "0 ms": 0,
             "0.1 ms": 0.100,
             "1 ms": 1,
@@ -138,7 +147,7 @@ class SpeedOfSound(QWidget):
             "30 ms": 30,
         }
 
-        pre_delay2 = {
+        self.pre_delay2 = {
 
             "1/512 note": 128,
             "1/256 note": 64,
@@ -147,7 +156,7 @@ class SpeedOfSound(QWidget):
             "1/32 note": 8
         }
 
-        pre_delay_decay = {
+        self.pre_delay_decay = {
             "1/32 note": 8,
             "1/16 note": 4,
             "1/8 note": 2,
@@ -159,81 +168,147 @@ class SpeedOfSound(QWidget):
             "8 notes": 0.03125
         }
 
-        pre_delayo = 60000 / BPM
-        decay_amt = pre_delay_decay[combo4.currentText()]
-        delay_decay = ((60000 / BPM) / decay_amt)
+    #def pre_calculations(self):
 
-        if combo3.currentText() in pre_delay1 and combo6.currentText() == "triplet":
-            pre_delay_amt1 = pre_delay1[combo3.currentText()]
+    #    self.numbers()
+    #    self.calculate_reverb()
+
+    #    if combo3.currentText() in self.pre_delay2:
+    #        pre_delay_amt1 = self.pre_delay2[combo3.currentText()]
+
+    #        self.output_label3.setText(f"{str(pre_delay_amt1)} ms")
+
+    #    elif combo.currentText() in self.pre_delay1:
+    #        pre_delay_amt1 = self.pre_delay1[combo3.currentText()]
+
+    #        self.output_label3.setText(f"{str(pre_delay_amt1)} ms")
+
+        #self.output_label3.setText(combo3.currentText())
+
+        #if combo3.currentText() in self.pre_delay1:
+        #    pre_delay_amt1 = self.pre_delay1[combo3.currentText()]
+
+        #    self.output_label3.setText(f"{str(pre_delay_amt1)} ms")
+
+
+
+
+
+
+
+    def calculate_reverb(self):
+
+        self.numbers()
+
+        pre_delayo = 60000 / self.BPM
+        decay_amt = self.pre_delay_decay[combo4.currentText()]
+        delay_decay = ((60000 / self.BPM) / decay_amt)
+
+
+
+        if combo3.currentText() in self.pre_delay1 and combo6.currentText() == "triplet":
+            pre_delay_amt1 = self.pre_delay1[combo3.currentText()]
+
+            #self.output_label3.setText(f"{str(pre_delay_amt1)} ms")
+
+            self.output_label4.setText(f"{round(delay_decay / 3) * 2} ms")
 
             self.output_label2.setText(
                 f"{round((((delay_decay / 3) * 2) - pre_delay_amt1), 3)}")
 
-        elif combo3.currentText() in pre_delay1 and combo6.currentText() == "dotted":  # params between 1/512 and 1/32 note
-            pre_delay_amt1 = pre_delay1[combo3.currentText()]
+        elif combo3.currentText() in self.pre_delay1 and combo6.currentText() == "dotted":  # params between 1/512 and 1/32 note
+            pre_delay_amt1 = self.pre_delay1[combo3.currentText()]
             zang = delay_decay / 2  # 150 / 2 = 75
+
+            #self.output_label3.setText(f"{str(pre_delay_amt1)} ms")
+
+            self.output_label4.setText(f"{str(delay_decay + zang)} ms")
 
             self.output_label2.setText(
                 f"{round(delay_decay + zang - (pre_delay_amt1), 3)}")
 
 
-        elif combo3.currentText() in pre_delay1:  # params between 0 and 30 ms
-            pre_delay_amt1 = pre_delay1[combo3.currentText()]
+        elif combo3.currentText() in self.pre_delay1:  # params between 0 and 30 ms
+            pre_delay_amt1 = self.pre_delay1[combo3.currentText()]
+
+            self.output_label3.setText(f"{str(pre_delay_amt1)} ms")
 
             self.output_label2.setText(
                 f"{round(delay_decay - pre_delay_amt1, 3)}")
 
 
         elif (
-                combo3.currentText() in pre_delay2 and combo5.currentText() == "triplet"
+                combo3.currentText() in self.pre_delay2 and combo5.currentText() == "triplet"
                 and combo6.currentText() == "triplet"):  # params between 1/512 and 1/32 note
-            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+            pre_delay_amt2 = self.pre_delay2[combo3.currentText()]
 
             prang = (delay_decay / 3)  # 100
+
+            self.output_label4.setText(f"{str(prang * 2)} ms")
+
+            self.output_label3.setText(f"{str(((pre_delayo / pre_delay_amt2) / 3)*2)} ms")
 
             self.output_label2.setText(
                 f"{round(delay_decay - ((((pre_delayo / pre_delay_amt2) / 3) * 2) + prang), 3)}")
 
         elif (
-                combo3.currentText() in pre_delay2 and combo5.currentText() == "triplet"
+                combo3.currentText() in self.pre_delay2 and combo5.currentText() == "triplet"
                 and combo6.currentText() == "dotted"):  # params between 1/512 and 1/32 note
-            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+            pre_delay_amt2 = self.pre_delay2[combo3.currentText()]
 
-            zang = delay_decay / 2
+            zang = delay_decay / 2 #pre_delayo = 600 , pre_delay_amt2 = 16, zang = 150, delay_decay = 300 450
+
+            self.output_label4.setText(f"{str((delay_decay + zang))} ms")#37,5
+
+            self.output_label3.setText(f"{str((((pre_delayo / pre_delay_amt2) / 3) * 2))} ms")
 
             self.output_label2.setText(
                 f"{round(delay_decay - ((((pre_delayo / pre_delay_amt2) / 3) * 2) - zang), 3)}")
 
         elif (
-                combo3.currentText() in pre_delay2 and combo5.currentText() == "triplet"
+                combo3.currentText() in self.pre_delay2 and combo5.currentText() == "triplet"
                 and combo6.currentText() == "---"):  # params between 1/512 and 1/32 note
-            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+            pre_delay_amt2 = self.pre_delay2[combo3.currentText()]
+
+            self.output_label3.setText(f"{str(((pre_delayo / pre_delay_amt2) / 3) * 2)} ms")
 
             self.output_label2.setText(
                 f"{round(delay_decay - (((pre_delayo / pre_delay_amt2) / 3) * 2), 3)}")
 
         elif (
-                combo3.currentText() in pre_delay2 and combo5.currentText() == "---"
+                combo3.currentText() in self.pre_delay2 and combo5.currentText() == "---"
                 and combo6.currentText() == "triplet"):  # params between 1/512 and 1/32 note
-            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+            pre_delay_amt2 = self.pre_delay2[combo3.currentText()]
 
             result = round((((delay_decay / 3) * 2) - (pre_delayo / pre_delay_amt2)), 3)
 
             if result is not None and result < 0:
 
-                    self.output_label2.setText(f"{(str(result))} duration of the delay is shorter than the pre-delay")
+                self.output_label4.setText(f"{round(delay_decay / 3) * 2} ms")
+
+                self.output_label3.setText(f"{str(pre_delayo / pre_delay_amt2)} ms")
+
+                self.output_label2.setText(f"{(str(result))} duration of the delay is shorter than the pre-delay")
 
             else:
+
+                self.output_label4.setText(f"{round(delay_decay / 3) * 2} ms")
+
+                self.output_label3.setText(f"{str((pre_delayo / pre_delay_amt2))} ms")
 
                 self.output_label2.setText(str(result))
 
 
         elif (
-                combo3.currentText() in pre_delay2 and combo5.currentText() == "dotted"
+                combo3.currentText() in self.pre_delay2 and combo5.currentText() == "dotted"
                 and combo6.currentText() == "triplet"):  # params between 1/512 and 1/32 note
-            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+            pre_delay_amt2 = self.pre_delay2[combo3.currentText()]
             sumbo = (pre_delayo / pre_delay_amt2) / 2
             prang = (delay_decay / 3)
+
+            self.output_label4.setText(f"{(str(delay_decay / 3) * 2)} ms")
+
+            self.output_label3.setText(f"{str((pre_delayo / pre_delay_amt2) + sumbo)} ms")
 
             result = round(delay_decay - (((pre_delayo / pre_delay_amt2) + sumbo) + prang), 3)
 
@@ -246,20 +321,28 @@ class SpeedOfSound(QWidget):
                 self.output_label2.setText(str(result))
 
         elif (
-                combo3.currentText() in pre_delay2 and combo5.currentText() == "dotted"
+                combo3.currentText() in self.pre_delay2 and combo5.currentText() == "dotted"
                 and combo6.currentText() == "dotted"):  # params between 1/512 and 1/32 note
-            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+            pre_delay_amt2 = self.pre_delay2[combo3.currentText()]
             sumbo = (pre_delayo / pre_delay_amt2) / 2
             zang = delay_decay / 2
+
+            self.output_label4.setText(f"{str((delay_decay + zang))} ms")
+
+            self.output_label3.setText(f"{str((pre_delayo / pre_delay_amt2) + sumbo)} ms")
 
             self.output_label2.setText(
                 f"{round(delay_decay - (((pre_delayo / pre_delay_amt2) + sumbo) - zang), 3)}")
 
         elif (
-                combo3.currentText() in pre_delay2 and combo5.currentText() == "dotted"
+                combo3.currentText() in self.pre_delay2 and combo5.currentText() == "dotted"
                 and combo6.currentText() == "---"):  # params between 1/512 and 1/32 note
-            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+            pre_delay_amt2 = self.pre_delay2[combo3.currentText()]
             sumbo = (pre_delayo / pre_delay_amt2) / 2
+
+            self.output_label4.setText(f"{str((pre_delayo / decay_amt))} ms")
+
+            self.output_label3.setText(f"{str((pre_delayo / pre_delay_amt2) + sumbo)} ms")
 
             result = round(delay_decay - ((pre_delayo / pre_delay_amt2) + sumbo), 3)
 
@@ -273,16 +356,24 @@ class SpeedOfSound(QWidget):
 
 
         elif (
-                combo3.currentText() in pre_delay2 and combo5.currentText() == "---"
+                combo3.currentText() in self.pre_delay2 and combo5.currentText() == "---"
                 and combo6.currentText() == "dotted"):  # params between 1/512 and 1/32 note
-            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+            pre_delay_amt2 = self.pre_delay2[combo3.currentText()]
             zang = delay_decay / 2  # 150 / 2 = 75
+
+            self.output_label4.setText(f"{str((delay_decay + zang))} ms")
+
+            self.output_label3.setText(f"{str(pre_delayo / pre_delay_amt2)} ms")
 
             self.output_label2.setText(
                 f"{round(delay_decay + zang - (pre_delayo / pre_delay_amt2), 3)}")  # 150 + 75 - 600 / 128 = 4.69 + 2.35
 
-        elif combo3.currentText() in pre_delay2:  # params between 1/512 and 1/32 note
-            pre_delay_amt2 = pre_delay2[combo3.currentText()]
+        elif combo3.currentText() in self.pre_delay2:  # params between 1/512 and 1/32 note
+            pre_delay_amt2 = self.pre_delay2[combo3.currentText()]
+
+            self.output_label4.setText(f"{str((pre_delayo / decay_amt))} ms")
+
+            self.output_label3.setText(f"{str(pre_delayo / pre_delay_amt2)} ms")
 
             self.output_label2.setText(
                 f"{round(delay_decay - (pre_delayo / pre_delay_amt2), 3)}")
