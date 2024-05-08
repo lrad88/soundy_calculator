@@ -123,7 +123,7 @@ class SpeedOfSound(QWidget):
             "Inches (in)": ((1086.6667 + (0.6 * temp)) * 12)
         }
 
-        if combo.currentText() in unit_to_formula:
+        if combo.currentText() in unit_to_formula and combo2.currentText() == "Celsius (C)":
             formula = unit_to_formula[combo.currentText()]
             combo_choice = distance / formula
             self.output_label.setText(
@@ -186,19 +186,21 @@ class SpeedOfSound(QWidget):
             pre_delay_amt1 = self.pre_delay1[combo3.currentText()]
             zang = delay_decay / 2
 
-            self.output_label4.setText(f"{(delay_decay + zang):.2f} ms")
+            self.output_label4.setText(f"{((delay_decay + zang)):.2f} ms") #
+
+            self.output_label3.setText(f"{pre_delay_amt1 :.2f} ms")
 
             self.output_label2.setText(
                 f"{(delay_decay + zang - (pre_delay_amt1)):.2f} ms")
 
-
-        elif combo3.currentText() in self.pre_delay1:
+        elif combo3.currentText() in self.pre_delay1 and combo4.currentText() in self.pre_delay_decay:
             pre_delay_amt1 = self.pre_delay1[combo3.currentText()]
 
-            self.output_label3.setText(f"{(pre_delay_amt1):.2f} ms")
+            self.output_label4.setText(f"{(pre_delayo / decay_amt):.2f} ms")
 
-            self.output_label2.setText(
-                f"{(delay_decay - pre_delay_amt1):.2f} ms")
+            self.output_label3.setText(f"{pre_delay_amt1 :.2f} ms")
+
+            self.output_label2.setText(f"{((pre_delayo / decay_amt) - pre_delay_amt1):.2f} ms")
 
 
         elif (
@@ -342,6 +344,7 @@ class SpeedOfSound(QWidget):
 
             self.output_label2.setText(
                 f"{(delay_decay - (pre_delayo / pre_delay_amt2)):.2f} ms")
+
 
 SOS = SpeedOfSound()
 SOS.show()
