@@ -48,6 +48,17 @@ class SpeedOfSound(QWidget):
         combo2.addItems(
             ["Celsius (C)", "Fahrenheit (F)", "Kelvin (K)"])
 
+        def update_default_temp(index):  # this def is for changing starting
+            # temp based on combo box choice
+            if index == 0:  # Celsius (C)
+                self.temp_line_edit.setText("20")
+            elif index == 1:  # Fahrenheit (F)
+                self.temp_line_edit.setText("68")
+            elif index == 2:  # Kelvin (K)
+                self.temp_line_edit.setText("293")
+
+        combo2.currentIndexChanged.connect(update_default_temp)
+
         calculate_button = QPushButton("Calculate")
         calculate_button.clicked.connect(self.calculate_sos)
 
@@ -116,20 +127,34 @@ class SpeedOfSound(QWidget):
         distance = float(self.distance_line_edit.text())
         temp = float(self.temp_line_edit.text())
 
-        unit_to_formula = {
-            "Meters (M)": 331.216 + (0.6 * temp),
+        unit_to_formula_celsius = {
+            "Meters (M)": 331.216 + ((0.6 * temp)),
             "Centimeters (CM)": ((331.216 + (0.6 * temp)) * 100),
             "Feet (ft)": 1086.6667 + (0.6 * temp),
             "Inches (in)": ((1086.6667 + (0.6 * temp)) * 12)
         }
 
-        if combo.currentText() in unit_to_formula and combo2.currentText() == "Celsius (C)":
-            formula = unit_to_formula[combo.currentText()]
+        unit_to_formula_fahrenheit = {
+            "Meters (M)": 331.216 + (((temp - 32) / 1.8)* 0.6),
+            "Centimeters (CM)": ((331.216 + ((temp - 32) / 1.8) * 0.6) * 100),
+            "Feet (ft)": 1086.6667 + (((temp - 32) / 1.8) * 0.6),
+            "Inches (in)": ((1086.6667 + ((temp - 32) / 1.8) * 0.6) * 12)
+        }
+
+        if combo.currentText() in unit_to_formula_celsius and combo2.currentText() == "Celsius (C)":
+            formula = unit_to_formula_celsius[combo.currentText()]
             combo_choice = distance / formula
             self.output_label.setText(
                 f"Sound will reach point in: {round(combo_choice, 3)} seconds")
-        else:
-            self.output_label.setText("Invalid unit of temperature selected.")
+
+        elif combo.currentText() in unit_to_formula_fahrenheit and combo2.currentText() == "Fahrenheit (F)":
+            formula = unit_to_formula_fahrenheit[combo.currentText()]
+            combo_choice = distance / formula
+            self.output_label.setText(
+                f"Sound will reach point in: {round(combo_choice, 3)} seconds")
+
+
+
 
 
     def numbers(self):
