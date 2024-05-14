@@ -46,16 +46,22 @@ class SpeedOfSound(QWidget):
         self.temp_line_edit = QLineEdit("20")
 
         combo2.addItems(
-            ["Celsius (C)", "Fahrenheit (F)", "Kelvin (K)"])
+            ["Celsius (C)", "Fahrenheit (F)"])
 
-        def update_default_temp(index):  # this def is for changing starting
-            # temp based on combo box choice
+        def update_default_temp(index):  # this def is for changing the temp
+            # in the QLineEdit() from celsius to fahrenheit, doing the
+            # calculation for you
+            temp_value = float(self.temp_line_edit.text())
+
             if index == 0:  # Celsius (C)
-                self.temp_line_edit.setText("20")
+                # Convert the temperature to Fahrenheit
+                temp_in_fahrenheit = (temp_value - 32) / 1.8
+                self.temp_line_edit.setText(str(temp_in_fahrenheit))
             elif index == 1:  # Fahrenheit (F)
-                self.temp_line_edit.setText("68")
-            elif index == 2:  # Kelvin (K)
-                self.temp_line_edit.setText("293")
+                # Convert the temperature to Celsius
+                temp_in_celsius = (temp_value * 1.8) + 32
+                self.temp_line_edit.setText(str(temp_in_celsius))
+
 
         combo2.currentIndexChanged.connect(update_default_temp)
 
@@ -135,7 +141,7 @@ class SpeedOfSound(QWidget):
         }
 
         unit_to_formula_fahrenheit = {
-            "Meters (M)": 331.216 + (((temp - 32) / 1.8)* 0.6),
+            "Meters (M)": 331.216 + (((temp - 32) / 1.8) * 0.6),
             "Centimeters (CM)": ((331.216 + ((temp - 32) / 1.8) * 0.6) * 100),
             "Feet (ft)": 1086.6667 + (((temp - 32) / 1.8) * 0.6),
             "Inches (in)": ((1086.6667 + ((temp - 32) / 1.8) * 0.6) * 12)
@@ -148,6 +154,7 @@ class SpeedOfSound(QWidget):
                 f"Sound will reach point in: {round(combo_choice, 3)} seconds")
 
         elif combo.currentText() in unit_to_formula_fahrenheit and combo2.currentText() == "Fahrenheit (F)":
+
             formula = unit_to_formula_fahrenheit[combo.currentText()]
             combo_choice = distance / formula
             self.output_label.setText(
