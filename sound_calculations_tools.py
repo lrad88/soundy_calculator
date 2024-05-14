@@ -12,7 +12,12 @@ that the speed of sound at room temperature calculates to the more
 accurate 343.216 m/s
 
 // speed of sound at room temperature is 343.216 m/s at 20 degrees c
+
+the second goal is an accurate reverb and delay calculator
+referenced from https://passionforedm.com/blog/reverbs-pre-delay-decay-durations/
 """
+
+
 
 from PyQt6.QtWidgets import QApplication, QLabel, \
     QWidget, QGridLayout, QLineEdit, QPushButton, QComboBox
@@ -107,6 +112,7 @@ class SpeedOfSound(QWidget):
 
             self.previous_index = index
         combo.currentIndexChanged.connect(qline_distance_update)
+        combo.currentIndexChanged.connect(self.calculate_sos)
 
 
 
@@ -143,9 +149,7 @@ class SpeedOfSound(QWidget):
                 self.temp_line_edit.setText(f"{(temp_in_celsius):.2f}")
 
         combo2.currentIndexChanged.connect(qline_temp_update)
-
-        calculate_button = QPushButton("Calculate")
-        calculate_button.clicked.connect(self.calculate_sos)
+        combo2.currentIndexChanged.connect(self.calculate_sos)
 
         self.output_label = QLabel("")
 
@@ -158,7 +162,7 @@ class SpeedOfSound(QWidget):
 
         def qline_BPM_update():
 
-            bpm_text = self.distance_line_edit.text()
+            bpm_text = self.BPM_line_edit.text()
 
             if not bpm_text or not bpm_text.replace('.', '',
                                                               1).isdigit():
@@ -201,6 +205,8 @@ class SpeedOfSound(QWidget):
 
         self.output_label4 = QLabel("")
 
+        decay_label = QLabel("Decay duration:")
+
         self.output_label2 = QLabel("")
 
         grid.addWidget(tool_label, 0, 0)
@@ -210,7 +216,6 @@ class SpeedOfSound(QWidget):
         grid.addWidget(temp_label, 2, 0)
         grid.addWidget(self.temp_line_edit, 2, 1)
         grid.addWidget(combo2, 2, 2)
-        grid.addWidget(calculate_button, 3, 1)
         grid.addWidget(self.output_label, 4, 0, 1, 2)
 
         # reverb calculator
@@ -221,12 +226,13 @@ class SpeedOfSound(QWidget):
         grid.addWidget(pre_delay_label, 7, 0)
         grid.addWidget(combo3, 7, 1)
         grid.addWidget(combo5, 7, 2)
-        grid.addWidget(self.output_label3, 8, 0, 1, 2)
+        grid.addWidget(self.output_label3, 8, 1, 1, 2)
         grid.addWidget(pre_delay_decay_label, 9, 0)
         grid.addWidget(combo4, 9, 1)
         grid.addWidget(combo6, 9, 2)
-        grid.addWidget(self.output_label4, 11, 0, 1, 2)
-        grid.addWidget(self.output_label2, 13, 0, 1, 2)
+        grid.addWidget(self.output_label4, 11, 1, 1, 2)
+        grid.addWidget(decay_label, 13, 0)
+        grid.addWidget(self.output_label2, 14, 0, 1, 2)
 
         self.setLayout(grid)
 
