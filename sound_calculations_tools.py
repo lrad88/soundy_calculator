@@ -56,11 +56,11 @@ class SpeedOfSound(QWidget):
             if index == 0:  # Celsius (C)
                 # Convert the temperature to Fahrenheit
                 temp_in_fahrenheit = (temp_value - 32) / 1.8
-                self.temp_line_edit.setText(str(temp_in_fahrenheit))
+                self.temp_line_edit.setText(f"{(temp_in_fahrenheit):.2f}")
             elif index == 1:  # Fahrenheit (F)
                 # Convert the temperature to Celsius
                 temp_in_celsius = (temp_value * 1.8) + 32
-                self.temp_line_edit.setText(str(temp_in_celsius))
+                self.temp_line_edit.setText(f"{(temp_in_celsius):.2f}")
 
 
         combo2.currentIndexChanged.connect(update_default_temp)
@@ -159,8 +159,6 @@ class SpeedOfSound(QWidget):
             combo_choice = distance / formula
             self.output_label.setText(
                 f"Sound will reach point in: {round(combo_choice, 3)} seconds")
-
-
 
 
 
