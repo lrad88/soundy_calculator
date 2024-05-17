@@ -17,12 +17,10 @@ the second goal is an accurate reverb and delay calculator
 referenced from https://passionforedm.com/blog/reverbs-pre-delay-decay-durations/
 """
 
-
-
 from PyQt6.QtWidgets import QApplication, QLabel, \
     QWidget, QGridLayout, QLineEdit, QPushButton, QComboBox
 
-import sys
+import sys, re
 
 app = QApplication(sys.argv)
 combo = QComboBox()
@@ -47,17 +45,19 @@ class SpeedOfSound(QWidget):
         combo.addItems(
             ["Meters (M)", "Centimeters (CM)", "Feet (ft)", "Inches (in)"])
 
-
         self.previous_index = 0
+
         def qline_distance_update(index):
 
             distance_text = self.distance_line_edit.text()
 
-            if not distance_text or not distance_text.replace('.', '',1).isdigit():
+            if not distance_text or not distance_text.replace('.', '',
+                                                              1).isdigit():
                 # Handle the case where the text is empty or not a valid float value
 
                 self.distance_line_edit.setText(
-                    "")  # Set a default value if the text is empty or not a valid float
+                    "0")  # Set a default value if the text is empty or not a valid float
+
                 return
 
             distance_value = float(self.distance_line_edit.text())
@@ -85,7 +85,7 @@ class SpeedOfSound(QWidget):
                     to_inches = (distance_value / 0.393701)
                     self.distance_line_edit.setText(f"{(to_inches):.2f}")
 
-            elif index == 2: # Feet (ft)
+            elif index == 2:  # Feet (ft)
 
                 if self.previous_index == 0:
                     to_meters = (distance_value * 3.28084)
@@ -97,7 +97,7 @@ class SpeedOfSound(QWidget):
                     to_inches = (distance_value / 12)
                     self.distance_line_edit.setText(f"{(to_inches):.2f}")
 
-            elif index == 3: # Inches (in)
+            elif index == 3:  # Inches (in)
 
                 if self.previous_index == 0:
                     to_meters = (distance_value * 39.37)
@@ -109,13 +109,10 @@ class SpeedOfSound(QWidget):
                     to_feet = (distance_value * 12)
                     self.distance_line_edit.setText(f"{(to_feet):.2f}")
 
-
             self.previous_index = index
+
         combo.currentIndexChanged.connect(qline_distance_update)
         combo.currentIndexChanged.connect(self.calculate_sos)
-
-
-
 
         temp_label = QLabel("Temp:")
         self.temp_line_edit = QLineEdit("20")
@@ -129,8 +126,9 @@ class SpeedOfSound(QWidget):
 
             temp_text = self.temp_line_edit.text()
 
-            if not temp_text or not temp_text.replace('.', '',
-                                                              1).isdigit():
+            if not temp_text or not (temp_text.replace('.', '',1).isdigit() or
+            (temp_text.startswith('-') and temp_text[1:].replace('.', '', 1).isdigit())):
+
                 # Handle the case where the text is empty or not a valid float value
 
                 self.temp_line_edit.setText(
@@ -157,27 +155,28 @@ class SpeedOfSound(QWidget):
         tool_label2 = QLabel("Reverb calculator:")
         bpm_label = QLabel("BPM:")
 
-
         self.BPM_line_edit = QLineEdit("")
 
         def qline_BPM_update():
 
             bpm_text = self.BPM_line_edit.text()
 
-            if not bpm_text or not bpm_text.replace('.', '',
-                                                              1).isdigit():
+            numeric_parts = re.findall(r'\d+', self.BPM_line_edit.text())
+            numeric_value = ''.join(numeric_parts)
+            if numeric_value:
+                self.BPM_line_edit.setText(numeric_value)
+
+            elif bpm_text or not bpm_text.replace('.', '',1).isdigit():
                 # Handle the case where the text is empty or not a valid float value
 
                 self.BPM_line_edit.setText(
-                    "120")  # Set a default value if the text is empty or not a valid float
+                    "128")  # Set a default value if the text is empty or not a valid float
                 return
 
         reverb_calc_combo_boxes_updater = [combo3, combo4, combo5, combo6]
 
         for combo_box in reverb_calc_combo_boxes_updater:
             combo_box.currentIndexChanged.connect(qline_BPM_update)
-
-
 
         pre_delay_label = QLabel("Pre-delay duration:")
         combo3.addItems(["0 ms", "0.1 ms", "1 ms", "10 ms", "30 ms",
@@ -236,7 +235,23 @@ class SpeedOfSound(QWidget):
 
         self.setLayout(grid)
 
+
+
     def calculate_sos(self):
+
+        if (self.distance_line_edit.text() and self.temp_line_edit.text()) == "":
+            # Handle the case where the text is empty or not a valid float value
+
+            self.distance_line_edit.setText("0")
+            self.temp_line_edit.setText("0")
+
+        if any(char.isalpha() for char in self.distance_line_edit.text()):
+            self.distance_line_edit.setText("0")
+
+        if any(char.isalpha() for char in self.temp_line_edit.text()):
+            self.temp_line_edit.setText("0")
+
+
         distance = float(self.distance_line_edit.text())
         temp = float(self.temp_line_edit.text())
 
@@ -266,6 +281,7 @@ class SpeedOfSound(QWidget):
             combo_choice = distance / formula
             self.output_label.setText(
                 f"Sound will reach point in: {round(combo_choice, 3)} seconds")
+
 
     def numbers(self):
         self.BPM = float(self.BPM_line_edit.text())
